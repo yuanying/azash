@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -22,8 +23,10 @@ var (
 )
 
 type BookList struct {
-	log logr.Logger
-	db  *bbolt.DB
+	log   logr.Logger
+	db    *bbolt.DB
+	cache []Book
+	mux   sync.Mutex
 }
 
 type Book struct {
@@ -35,14 +38,14 @@ type Book struct {
 	ModTime    time.Time
 }
 
-func NewBookList(log logr.Logger, db *bbolt.DB) BookList {
-	return BookList{
+func NewBookList(log logr.Logger, db *bbolt.DB) *BookList {
+	return &BookList{
 		log: log,
 		db:  db,
 	}
 }
 
-func (b *BookList) Register(ctx context.Context, root string) error {
+func (b *BookList) RegisterDir(ctx context.Context, root string) error {
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -69,7 +72,7 @@ func (b *BookList) Register(ctx context.Context, root string) error {
 				}
 				book.parseFilename()
 				book.parsePath()
-				return b.register(book)
+				return b.Register(book)
 			}
 		}
 
@@ -84,7 +87,7 @@ func (b *BookList) Register(ctx context.Context, root string) error {
 	return nil
 }
 
-func (b *BookList) register(book Book) error {
+func (b *BookList) Register(book Book) error {
 	b.db.Update(func(tx *bbolt.Tx) error {
 		if bucket, err := tx.CreateBucketIfNotExists(booksBucket); err != nil {
 			return err
@@ -97,6 +100,9 @@ func (b *BookList) register(book Book) error {
 					if err := bucket.Put(bid, raw); err != nil {
 						return err
 					}
+					b.mux.Lock()
+					b.cache = nil
+					b.mux.Unlock()
 				}
 			} else {
 				b.log.Info("Book is already registerd", "id", book.ID, "filename", book.Filename)
@@ -109,6 +115,11 @@ func (b *BookList) register(book Book) error {
 }
 
 func (b *BookList) All() ([]Book, error) {
+	b.mux.Lock()
+	defer b.mux.Unlock()
+	if b.cache != nil {
+		return b.cache, nil
+	}
 	var books []Book
 
 	if err := b.db.View(func(tx *bbolt.Tx) error {
@@ -128,8 +139,9 @@ func (b *BookList) All() ([]Book, error) {
 	}
 
 	sort.Slice(books, func(i, j int) bool { return books[i].ModTime.After(books[j].ModTime) })
+	b.cache = books
 
-	return books, nil
+	return b.cache, nil
 }
 
 var titleRegExp = regexp.MustCompile(`^(\((?P<category>\S+)\))?\s*(\[(?P<rawArtists>[^\]]+)\])?\s*(.+)`)
