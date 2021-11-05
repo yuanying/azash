@@ -17,11 +17,11 @@ type Handlers struct {
 	cache    *ca.Manager
 }
 
-func NewHandler(log logr.Logger, bookList *bo.BookList, root string) Handlers {
+func NewHandler(log logr.Logger, bookList *bo.BookList, cache *ca.Manager) Handlers {
 	return Handlers{
 		log:      log,
 		bookList: bookList,
-		cache:    ca.NewManager(log.WithName("cache"), root),
+		cache:    cache,
 	}
 }
 

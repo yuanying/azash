@@ -1,12 +1,7 @@
 package books
 
 import (
-	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
-	"errors"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -32,7 +27,6 @@ type BookList struct {
 type Book struct {
 	ID         string
 	Filename   string
-	Path       string
 	Artists    []string
 	Categories []string
 	ModTime    time.Time
@@ -43,48 +37,6 @@ func NewBookList(log logr.Logger, db *bbolt.DB) *BookList {
 		log: log,
 		db:  db,
 	}
-}
-
-func (b *BookList) RegisterDir(ctx context.Context, root string) error {
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		select {
-		case <-ctx.Done():
-			return errors.New("Canceled")
-		default:
-			if info.IsDir() && strings.HasPrefix(info.Name(), ".") {
-				return filepath.SkipDir
-			}
-
-			if !info.IsDir() && !strings.HasPrefix(info.Name(), ".") && (strings.HasSuffix(info.Name(), ".zip") || strings.HasPrefix(info.Name(), ".cbr")) {
-				hash, err := fileHash(path)
-				if err != nil {
-					return err
-				}
-				book := Book{
-					ID:       hash,
-					Filename: info.Name(),
-					Path:     path,
-					ModTime:  info.ModTime(),
-				}
-				book.parseFilename()
-				book.parsePath()
-				return b.Register(book)
-			}
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		b.log.Error(err, "Something wrong")
-		return err
-	}
-
-	return nil
 }
 
 func (b *BookList) Register(book Book) error {
@@ -158,7 +110,7 @@ func (b *BookList) All() ([]Book, error) {
 
 var titleRegExp = regexp.MustCompile(`^(\((?P<category>\S+)\))?\s*(\[(?P<rawArtists>[^\]]+)\])?\s*(.+)`)
 
-func (book *Book) parseFilename() error {
+func (book *Book) ParseFilename() error {
 	g := titleRegExp.FindStringSubmatch(book.Filename)
 	if g != nil {
 		catIndex := titleRegExp.SubexpIndex("category")
@@ -178,8 +130,8 @@ func (book *Book) parseFilename() error {
 
 var allNumber = regexp.MustCompile(`^\d+$`)
 
-func (book *Book) parsePath() error {
-	parentDir := filepath.Base(filepath.Dir(book.Path))
+func (book *Book) ParsePath(path string) error {
+	parentDir := filepath.Base(filepath.Dir(path))
 
 	if !strings.Contains(parentDir, ".") && !strings.Contains(parentDir, "/") && parentDir != "temp" && !allNumber.MatchString(parentDir) {
 		for _, artist := range book.Artists {
@@ -210,21 +162,4 @@ func abstractArtists(str string) []string {
 		}
 	}
 	return artists
-}
-
-func fileHash(path string) (string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-
-	buf := make([]byte, 512)
-	_, err = f.Read(buf)
-	if err != nil {
-		return "", err
-	}
-	s := sha1.Sum(buf)
-
-	return hex.EncodeToString(s[:]), nil
 }

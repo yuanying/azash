@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/go-logr/logr"
 	"github.com/yuanying/azash/pkgs/books"
@@ -22,6 +23,7 @@ type Manager struct {
 	Root string
 
 	log logr.Logger
+	mux sync.Mutex
 }
 
 func NewManager(log logr.Logger, root string) *Manager {
@@ -38,10 +40,10 @@ func (c *Manager) Get(book *books.Book) (*Cache, error) {
 		if !os.IsNotExist(err) {
 			return nil, err
 		}
-		return c.Generate(dir, book)
+		return nil, nil
 	}
 
-	return c.Load(c.IndexPath(book), book)
+	return c.Load(book)
 }
 
 func (c *Manager) Dir(book *books.Book) string {
@@ -52,8 +54,11 @@ func (c *Manager) IndexPath(book *books.Book) string {
 	return filepath.Join(c.Dir(book), "index.json")
 }
 
-func (c *Manager) Load(index string, book *books.Book) (cache *Cache, err error) {
+func (c *Manager) Load(book *books.Book) (cache *Cache, err error) {
 	cache = &Cache{}
+	index := c.IndexPath(book)
+	c.mux.Lock()
+	defer c.mux.Unlock()
 
 	b, err := ioutil.ReadFile(index)
 	if err != nil {
@@ -64,15 +69,32 @@ func (c *Manager) Load(index string, book *books.Book) (cache *Cache, err error)
 	return
 }
 
-func (c *Manager) Generate(path string, book *books.Book) (cache *Cache, err error) {
+func (c *Manager) Generate(bookPath string, book *books.Book) (err error) {
+	path := c.Dir(book)
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
+	_, err = os.Stat(path)
+	if !os.IsNotExist(err) {
+		if err != nil {
+			return err
+		}
+		return
+	}
+
 	if err = os.MkdirAll(path, 0755); err != nil {
 		c.log.Error(err, "Failed to create cache dir", "path", path)
 		return
 	}
+	defer func() {
+		if err != nil {
+			c.log.Error(err, "TODO: Try to remove all cache files")
+		}
+	}()
 
-	cache = &Cache{}
+	cache := &Cache{}
 
-	reader, err := zip.OpenReader(book.Path)
+	reader, err := zip.OpenReader(bookPath)
 	if err != nil {
 		return
 	}
@@ -100,12 +122,6 @@ func (c *Manager) Generate(path string, book *books.Book) (cache *Cache, err err
 	if err = c.createIndexFile(c.IndexPath(book), cache); err != nil {
 		return
 	}
-
-	defer func() {
-		if err != nil {
-			c.log.Error(err, "Try to remove all cache files")
-		}
-	}()
 
 	return
 }
