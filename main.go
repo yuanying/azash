@@ -71,6 +71,8 @@ func main() {
 
 	r.HandleFunc("/apis/books", booksHandler.All).Methods("GET")
 	r.HandleFunc("/books/{books}", cachesHandler.Index).Methods("GET")
+	r.HandleFunc("/books/{books}/thumbnail", cachesHandler.Thumbnail).Methods("GET")
+	r.HandleFunc("/books/{books}/{filename}", cachesHandler.File).Methods("GET")
 
 	srv := &http.Server{
 		Addr:         "0.0.0.0:8080",

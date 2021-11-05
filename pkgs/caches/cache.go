@@ -77,9 +77,9 @@ func (c *Manager) Generate(bookPath string, book *books.Book) (err error) {
 	_, err = os.Stat(path)
 	if !os.IsNotExist(err) {
 		if err != nil {
-			return err
+			return
 		}
-		return
+		return nil
 	}
 
 	if err = os.MkdirAll(path, 0755); err != nil {
