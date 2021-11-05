@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-logr/logr"
 
-	bo "github.com/yuanying/crapi/pkgs/books"
+	bo "github.com/yuanying/azash/pkgs/books"
 )
 
 type Book struct {

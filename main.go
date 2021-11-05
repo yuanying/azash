@@ -15,9 +15,9 @@ import (
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 
-	"github.com/yuanying/crapi/pkgs/books"
-	books_handler "github.com/yuanying/crapi/pkgs/handlers/books"
-	caches_handler "github.com/yuanying/crapi/pkgs/handlers/caches"
+	"github.com/yuanying/azash/pkgs/books"
+	books_handler "github.com/yuanying/azash/pkgs/handlers/books"
+	caches_handler "github.com/yuanying/azash/pkgs/handlers/caches"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 		wait   time.Duration
 	)
 	flag.StringVar(&root, "root", root, "Root directory")
-	flag.StringVar(&cache, "cache", "/tmp/crapi", "Cache directory")
+	flag.StringVar(&cache, "cache", "/tmp/azash", "Cache directory")
 	flag.StringVar(&dbPath, "db-path", dbPath, "DB path")
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()

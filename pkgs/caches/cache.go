@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/go-logr/logr"
-	"github.com/yuanying/crapi/pkgs/books"
+	"github.com/yuanying/azash/pkgs/books"
 )
 
 type Cache struct {

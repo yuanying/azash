@@ -7,8 +7,8 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/gorilla/mux"
 
-	bo "github.com/yuanying/crapi/pkgs/books"
-	ca "github.com/yuanying/crapi/pkgs/caches"
+	bo "github.com/yuanying/azash/pkgs/books"
+	ca "github.com/yuanying/azash/pkgs/caches"
 )
 
 type Handlers struct {

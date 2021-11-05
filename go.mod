@@ -1,4 +1,4 @@
-module github.com/yuanying/crapi
+module github.com/yuanying/azash
 
 go 1.16
 
