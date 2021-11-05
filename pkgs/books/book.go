@@ -2,7 +2,7 @@ package books
 
 import (
 	"context"
-	"crypto/sha256"
+	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -114,6 +114,18 @@ func (b *BookList) Register(book Book) error {
 	return nil
 }
 
+func (b *BookList) Get(id string) (*Book, error) {
+	book := &Book{}
+	b.db.View(func(tx *bbolt.Tx) error {
+		raw := tx.Bucket(booksBucket).Get([]byte(id))
+		if err := json.Unmarshal(raw, book); err != nil {
+			return err
+		}
+		return nil
+	})
+	return book, nil
+}
+
 func (b *BookList) All() ([]Book, error) {
 	b.mux.Lock()
 	defer b.mux.Unlock()
@@ -212,7 +224,7 @@ func fileHash(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	s := sha256.Sum256(buf)
+	s := sha1.Sum(buf)
 
 	return hex.EncodeToString(s[:]), nil
 }
