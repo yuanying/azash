@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: gofmt check
+        run: |
+          diff=$(gofmt -l -d .)
+          if [ -n "$diff" ]; then
+            echo "$diff"
+            exit 1
+          fi
+
+      - name: go test
+        run: go test ./...
+
+      - name: golangci-lint
+        run: go tool golangci-lint run ./...

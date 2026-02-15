@@ -1,0 +1,19 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errorlint
+    - gocritic
+
+output:
+  sort-results: true
+  sort-order:
+    - file
+
+issues:
+  exclude-dirs:
+    - temp
+    - testdata
