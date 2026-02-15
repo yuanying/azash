@@ -26,7 +26,7 @@ func LoadCSV(path string) ([]compat.Sample, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open samples csv: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	r := csv.NewReader(f)
 	r.FieldsPerRecord = -1

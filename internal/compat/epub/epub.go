@@ -19,7 +19,7 @@ func ListEntries(epubPath string) ([]EntryMeta, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	out := make([]EntryMeta, 0, len(r.File))
 	for i, f := range r.File {
@@ -33,7 +33,7 @@ func Unpack(epubPath, outDir string) error {
 	if err != nil {
 		return err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	if err := os.RemoveAll(outDir); err != nil {
 		return err
@@ -63,16 +63,16 @@ func Unpack(epubPath, outDir string) error {
 		}
 		wf, err := os.Create(target)
 		if err != nil {
-			rc.Close()
+			_ = rc.Close()
 			return err
 		}
 		if _, err := io.Copy(wf, rc); err != nil {
-			wf.Close()
-			rc.Close()
+			_ = wf.Close()
+			_ = rc.Close()
 			return err
 		}
 		if err := wf.Close(); err != nil {
-			rc.Close()
+			_ = rc.Close()
 			return err
 		}
 		if err := rc.Close(); err != nil {
