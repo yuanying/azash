@@ -34,13 +34,20 @@ jobs:
         run: |
           mkdir -p temp
           git clone --depth 1 https://github.com/kyukyunyorituryo/AozoraEpub3.git temp/AozoraEpub3
+          mkdir -p temp/AozoraEpub3-bin
+          gh release download \
+            --repo kyukyunyorituryo/AozoraEpub3 \
+            --pattern 'AozoraEpub3-*.zip' \
+            --dir temp
+          unzip -oq temp/AozoraEpub3-*.zip -d temp/AozoraEpub3-bin
+          rm -f temp/AozoraEpub3-*.zip
 
       - name: Run compatibility harness (non-gating)
         run: |
           go run ./cmd/azash-compat run \
             --sample-id sample-006 \
-            --java-cp temp/AozoraEpub3/AozoraEpub3.jar \
-            --ini temp/AozoraEpub3/AozoraEpub3.ini
+            --java-cp temp/AozoraEpub3-bin/AozoraEpub3.jar \
+            --ini temp/AozoraEpub3-bin/presets/reader.ini
 
       - name: Upload compatibility artifacts
         if: always()
