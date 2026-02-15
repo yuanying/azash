@@ -1,15 +1,12 @@
 # Development Notes
 
-## AozoraEpub3 source bootstrap
+## Project Overview
 
-This repository expects the upstream Java source under `temp/AozoraEpub3`.
+AozoraEpub3 (Java) の Go 移植プロジェクト。青空文庫形式テキストを EPUB3 に変換する。
 
-If `temp/AozoraEpub3` does not exist, clone it with:
+## AozoraEpub3 bootstrap
 
-```bash
-mkdir -p temp
-git clone --depth 1 https://github.com/kyukyunyorituryo/AozoraEpub3.git temp/AozoraEpub3
-```
+`temp/AozoraEpub3` または `temp/AozoraEpub3-bin` が存在せずエラーが発生した場合は [docs/aozoraepub3-bootstrap.md](docs/aozoraepub3-bootstrap.md) を参照。
 
 ## Quality Checks
 
@@ -19,4 +16,3 @@ go vet ./...
 gofmt -l -d .
 go tool golangci-lint run ./...
 ```
-
