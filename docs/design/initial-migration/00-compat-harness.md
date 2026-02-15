@@ -6,20 +6,69 @@ Java版をオラクルにして、Go版との差分を機械比較できる基�
 
 ## 成果物
 
-- Java出力ゴールデン生成スクリプト
-- EPUB正規化ツール (UUID/日時/zip順序の正規化)
-- 差分レポート (ファイル単位/要素単位)
+- `cmd/azash-compat` (`golden-java` / `compare` / `run`)
+- Java出力ゴールデン生成処理
+- EPUB展開・正規化ツール (UUID/日時/zip順序の正規化)
+- XML/HTML/CSS差分レポート (Markdown + JSON)
+- 差分カテゴリ分類 (`ruby/chuki/chapter/image/encoding/metadata/packaging/unknown`)
 
 ## チェックリスト
 
-- [ ] `test_data/*.txt` と `test_png.zip` を対象にゴールデン生成対象を定義
-- [ ] 追加の青空文庫サンプルを収集して管理台帳を作成 (URL/取得日/文字コード/用途)
-- [ ] Java版実行コマンドを固定化 (入力/INI/出力先)
+- [x] `test_data/*.txt` と `test_png.zip` を対象にゴールデン生成対象を定義
+- [x] 追加の青空文庫サンプルを収集して管理台帳を作成 (URL/取得日/文字コード/用途)
+- [x] Java版実行コマンドを固定化 (入力/INI/出力先)
 - [ ] EPUB展開処理を実装
 - [ ] 非決定要素の正規化ルールを実装
 - [ ] XML/HTML/CSS比較ルールを定義
 - [ ] 差分レポートをCIで保存できる形にする
 - [ ] 失敗時に「どの変換機能差分か」を分類表示する
+
+## CLI仕様 (初期)
+
+- `azash-compat golden-java`: Javaゴールデン生成
+- `azash-compat compare`: Java/Go EPUB比較
+- `azash-compat run`: 生成 + 比較の一括実行
+
+主要フラグ:
+
+- `--samples-file` (default: `testdata/compat/samples.csv`)
+- `--input-dir` (default: `testdata/compat/input`)
+- `--golden-dir` (default: `testdata/compat/golden/java`)
+- `--go-out-dir` (default: `testdata/compat/output/go`)
+- `--work-dir` (default: `testdata/compat/unpacked`)
+- `--report-dir` (default: `testdata/compat/reports/latest`)
+- `--sample-id` (複数指定可)
+- `--java-cmd` / `--java-cp` / `--java-main` / `--ini`
+- `--fail-on-diff` (default: `false`)
+
+## 差分判定ポリシー
+
+- 初期E2Eは非ゲート運用。
+- 差分があっても失敗扱いにしない。
+- 失敗扱いにするのは以下のみ:
+  - Java生成失敗
+  - EPUB展開失敗
+  - 正規化失敗
+  - 比較処理失敗
+  - レポート生成失敗
+- 将来ゲート化時は `--fail-on-diff=true` を使用する。
+
+## レポート仕様
+
+- `testdata/compat/reports/latest/summary.md`
+- `testdata/compat/reports/latest/report.json`
+- 比較用中間成果物:
+  - `testdata/compat/unpacked/<sample-id>/java/{raw,normalized}`
+  - `testdata/compat/unpacked/<sample-id>/go/{raw,normalized}`
+
+`report.json` 主要項目:
+
+- `run` (開始/終了時刻、mode、version)
+- `sample_count`
+- `samples[]` (sampleごとのstatus, diff_summary, failures)
+- `diff_summary` (files/node/text/attr)
+- `categories`
+- `failures[]`
 
 ## 人手実施手順 (サンプル収集込み)
 
@@ -40,7 +89,7 @@ Java版をオラクルにして、Go版との差分を機械比較できる基�
 
 ### 3. 収集台帳を作る
 
-`testdata/compat/samples.csv` (または `.md`) に次を記録:
+`testdata/compat/samples.csv` に次を記録:
 
 - 作品名
 - 取得元URL
@@ -72,3 +121,4 @@ Java版をオラクルにして、Go版との差分を機械比較できる基�
 
 - 同一入力に対し、Java/Go差分を再現性高く表示できる。
 - 人手でEPUBを開かなくても差分原因を追える。
+- 初期フェーズでは「差分ゼロ」ではなく「差分を安定して可視化できる」ことを完了条件とする。
