@@ -1,0 +1,7 @@
+id,title,source_url,downloaded_at,input_file,expected_encoding,tags,notes
+sample-001,吾輩は猫である,https://www.aozora.gr.jp/cards/000148/card789.html,2026-02-14,aozora_789_ruby.zip,AUTO,"ruby,chuki,chapter,long",""
+sample-002,こころ,https://www.aozora.gr.jp/cards/000148/card773.html,2026-02-14,aozora_773_ruby.zip,AUTO,"chapter,pagination,long",""
+sample-003,羅生門,https://www.aozora.gr.jp/cards/000879/card127.html,2026-02-14,aozora_127_ruby.zip,AUTO,"baseline,short",""
+sample-004,〔「銀河鉄道の夜」初期形一〕,https://www.aozora.gr.jp/cards/000081/card60681.html,2026-02-14,aozora_60681_ruby.zip,AUTO,"encoding,old-kana,chuki",""
+sample-005,実さんの精神分析,https://www.aozora.gr.jp/cards/000096/card46705.html,2026-02-14,aozora_46705_ruby.zip,AUTO,"symbol,chuki",""
+sample-006,test_png.zip (image-only),local:temp/AozoraEpub3/test_data/test_png.zip,2026-02-14,test_png.zip,AUTO,"image,image-only,zip","from local AozoraEpub3 test_data"
