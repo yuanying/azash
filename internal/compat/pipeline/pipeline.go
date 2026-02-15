@@ -55,9 +55,9 @@ func DefaultOptions() Options {
 		ReportDir:   "testdata/compat/reports/latest",
 		LogDir:      "testdata/compat/reports/latest/logs",
 		JavaCmd:     "java",
-		JavaCP:      "temp/AozoraEpub3/AozoraEpub3.jar",
+		JavaCP:      "temp/AozoraEpub3-bin/AozoraEpub3.jar",
 		JavaMain:    "AozoraEpub3",
-		INIPath:     "AozoraEpub3.ini",
+		INIPath:     "temp/AozoraEpub3-bin/presets/reader.ini",
 	}
 }
 

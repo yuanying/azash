@@ -42,8 +42,8 @@
 ### Java only (manual example)
 
 ```bash
-java -cp temp/AozoraEpub3/AozoraEpub3.jar AozoraEpub3 \
-  -i AozoraEpub3.ini \
+java -cp temp/AozoraEpub3-bin/AozoraEpub3.jar AozoraEpub3 \
+  -i temp/AozoraEpub3-bin/presets/reader.ini \
   -enc AUTO \
   -ext .epub \
   -d testdata/compat/golden/java \
