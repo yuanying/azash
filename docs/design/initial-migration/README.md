@@ -12,6 +12,8 @@
 ## タスク一覧
 
 - [00 互換比較ハーネス](./00-compat-harness.md)
+  - 初期E2Eは非ゲート運用 (差分ありでも失敗にしない)
+  - 成果物は `summary.md` + `report.json` を基準にする
 - [01 リソース解決層](./01-resource-resolution.md)
 - [02 モデル層](./02-model-layer.md)
 - [03 設定/辞書ローダ](./03-config-dictionary-loader.md)
@@ -23,10 +25,11 @@
 - [09 EPUBライタ](./09-epub-writer.md)
 - [10 CLI最小統合](./10-cli-minimal-integration.md)
 - [11 E2E互換チューニング](./11-e2e-compat-tuning.md)
+  - `00` が可視化基盤、`11` は差分収束とゲート化判断を担当
 - [12 Web小説変換 (narou含む)](./12-web-narou-conversion.md)
 
 ## マイルストーン
 
-- M1: 変換パイプライン開通 + Java互換リソース読込
+- M1: 変換パイプライン開通 + Java互換リソース読込 + 互換比較ハーネスの定常実行可能化
 - M2: 注記/ルビ/外字/縦中横のコア互換
 - M3: zip/cbz/画像のみを含む実用互換

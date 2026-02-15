@@ -1,0 +1,54 @@
+name: compat-harness
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cmd/azash-compat/**'
+      - 'internal/compat/**'
+      - 'testdata/compat/**'
+      - '.github/workflows/compat-harness.yml'
+
+jobs:
+  compat:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.7'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21.0.2'
+
+      - name: Bootstrap AozoraEpub3
+        run: |
+          mkdir -p temp
+          git clone --depth 1 https://github.com/kyukyunyorituryo/AozoraEpub3.git temp/AozoraEpub3
+
+      - name: Run compatibility harness (non-gating)
+        run: |
+          go run ./cmd/azash-compat run \
+            --sample-id sample-006 \
+            --java-cp temp/AozoraEpub3/AozoraEpub3.jar \
+            --ini temp/AozoraEpub3/AozoraEpub3.ini
+
+      - name: Upload compatibility artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compat-harness-artifacts
+          path: |
+            testdata/compat/reports/latest
+            testdata/compat/unpacked
+            testdata/compat/golden/java
+          if-no-files-found: warn
