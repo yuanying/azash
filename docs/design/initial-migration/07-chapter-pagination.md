@@ -12,6 +12,7 @@
 
 ## チェックリスト
 
+- [ ] `BookInfo.setMetaInfo` / `reloadMetadata` の移植 (02-model-layer から延期、CharUtils 依存)
 - [ ] 章見出しパターン設定を実装
 - [ ] 章レベル/除外/連番抑制オプションを実装
 - [ ] 強制改ページサイズ条件を実装

@@ -12,6 +12,7 @@ txt/zip/txtz/rar/cbz を統一的に扱い、テキスト本体と画像情報�
 
 ## チェックリスト
 
+- [ ] `BookInfo.getFileTitleCreator` の移植 (02-model-layer から延期)
 - [ ] txt入力実装
 - [ ] zip/txtzでtxtエントリ列挙と`txtIdx`選択を実装
 - [ ] cbz/画像のみ判定を実装
