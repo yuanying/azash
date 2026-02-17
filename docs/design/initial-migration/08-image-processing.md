@@ -12,6 +12,8 @@
 
 ## チェックリスト
 
+- [ ] `BookInfo.loadCoverImage` の移植 (02-model-layer から延期、ImageUtils 依存)
+- [ ] `ImageInfo.getImageInfo(File/Stream)` の移植 (02-model-layer から延期)
 - [ ] 画像フォーマット判定を実装
 - [ ] 寸法取得と向き判定を実装
 - [ ] リサイズ/圧縮品質設定を実装
