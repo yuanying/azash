@@ -20,6 +20,26 @@
 - [ ] 既存ディレクトリ互換を壊さない実行導線を確認
 - [ ] 後続で追加するフラグの拡張ポイントを設計
 
+## Step 03 からの補足情報
+
+### Config ロード
+
+- `config.LoadFromReader(r)` は `(*Config, []string, error)` を返す。第 2 返値は未知キーの警告リスト
+- INI ファイルのパスは CLI フラグまたはデフォルト（jar パス + `AozoraEpub3.ini`）から決定
+- INI が存在しない場合は `config.NewConfig()` でデフォルト値を使用
+
+### 辞書ロード順序
+
+辞書ファイルは以下の順序でロードする（Java 版の初期化順序と互換）:
+
+1. `chuki_tag.txt` → `ChukiTagMap`
+2. `chuki_tag_suf.txt` → `ChukiSufMap`
+3. `chuki_ivs.txt` → `GaijiMap.UtfMap`（最優先）
+4. `chuki_utf.txt` → `GaijiMap.UtfMap`（IVS と重複するキーはスキップ）
+5. `chuki_alt.txt` → `GaijiMap.AltMap`
+6. `chuki_latin.txt` → `LatinMap`
+7. `replace.txt` → `ReplaceMap`（ファイル不在時は nil、optional）
+
 ## 受け入れ条件
 
 - 必須フラグのみで実用変換が回る。

@@ -19,6 +19,23 @@
 - [ ] リリース判定基準を文書化
 - [ ] 継続回帰のCIジョブを追加
 
+## Step 03 からの補足情報
+
+### 既知の意図的非互換
+
+- **AutoMarginNombreSize**: Java 版 L183 はタイポで `AutoMarginNombreSize` の値を `autoMarginPadding` に代入し、`nobreSize` は常に 0.03f のまま。Go 版はこのバグを再現せず、各フィールドに正しく値を格納する。AutoMargin 使用時に出力差異が発生する可能性あり
+
+### 既知の制限事項
+
+- **INI パーサ**: Java `Properties.load()` の完全互換ではなく、最小互換実装。`:` 区切り・`\uXXXX` エスケープ・行末 `\` 継続行は未対応。実 INI ファイル（presets/*.ini）は `key=value` 形式のみのため現時点で問題なし
+- **辞書ローダのエラー処理**: 不正行はサイレントスキップ（ログ出力なし）。Java 版は `LogAppender.error()` で行番号付き警告を出力する
+
+### E2E 検証時の注意
+
+- `ReplaceMap` の分類は UTF-16 コードユニット数で判定。BMP 外文字を含む replace.txt を使用する場合、Java 版と同一の分類結果になることを検証
+- `GaijiMap` の重複キーは先勝ち。IVS → UTF → ALT のロード順序が正しいことを検証
+- `Config` の条件付きロード（`PageBreak=0` のときサブプロパティ無視等）により、INI 内に値があっても無効化されるケースがある
+
 ## 受け入れ条件
 
 - 主要サンプルで「利用者視点で同等」と判断できる状態に到達する。
