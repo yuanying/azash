@@ -12,14 +12,14 @@ txt/zip/txtz/rar/cbz を統一的に扱い、テキスト本体と画像情報�
 
 ## チェックリスト
 
-- [ ] `BookInfo.getFileTitleCreator` の移植 (02-model-layer から延期)
-- [ ] txt入力実装
-- [ ] zip/txtzでtxtエントリ列挙と`txtIdx`選択を実装
-- [ ] cbz/画像のみ判定を実装
-- [ ] rar対応方針を明文化 (初期は限定対応/後続対応)
-- [ ] `AUTO/MS932/UTF-8` 判定フローを実装
-- [ ] 入力エラー時の復旧方針 (skip/abort) を定義
-- [ ] サンプル入力に対するI/Oテストを作成
+- [x] `BookInfo.getFileTitleCreator` の移植 (02-model-layer から延期)
+- [x] txt入力実装
+- [x] zip/txtzでtxtエントリ列挙と`txtIdx`選択を実装
+- [x] cbz/画像のみ判定を実装
+- [x] rar対応方針を明文化 (初期は限定対応/後続対応)
+- [x] `AUTO/MS932/UTF-8` 判定フローを実装
+- [x] 入力エラー時の復旧方針 (skip/abort) を定義
+- [x] サンプル入力に対するI/Oテストを作成
 
 ## 受け入れ条件
 
