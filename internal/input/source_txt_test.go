@@ -23,7 +23,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		if src.Format() != FormatTxt {
 			t.Errorf("Format() = %v, want %v", src.Format(), FormatTxt)
@@ -35,7 +35,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		entries := src.TextEntries()
 		if len(entries) != 1 {
@@ -51,7 +51,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		if src.ImageOnly() {
 			t.Error("ImageOnly() = true, want false")
@@ -63,13 +63,13 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		rc, entry, err := src.OpenText(0)
 		if err != nil {
 			t.Fatalf("OpenText(0) error: %v", err)
 		}
-		defer rc.Close()
+		defer func() { _ = rc.Close() }()
 
 		if entry.Name != "test.txt" {
 			t.Errorf("entry.Name = %q, want %q", entry.Name, "test.txt")
@@ -89,7 +89,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		_, _, err = src.OpenText(1)
 		if !errors.Is(err, ErrTextIndexOutOfRange) {
@@ -102,7 +102,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		parentPath := src.ArchiveTextParentPath(0)
 		if !strings.HasSuffix(parentPath, "/") {
@@ -118,7 +118,7 @@ func TestTxtSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open(%q) error: %v", txtPath, err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		images := src.ImageEntries()
 		if len(images) != 0 {

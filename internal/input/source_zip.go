@@ -9,9 +9,9 @@ import (
 	"golang.org/x/text/encoding/japanese"
 )
 
-// 画像拡張子セット
+// 画像拡張子セット (Java版 ImageInfoReader 互換: png/jpg/jpeg/gif/webp)
 var imageExts = map[string]bool{
-	".png": true, ".jpg": true, ".jpeg": true, ".gif": true, ".bmp": true, ".svg": true,
+	".png": true, ".jpg": true, ".jpeg": true, ".gif": true, ".webp": true,
 }
 
 // zipSource はzip/txtzアーカイブの Source 実装。

@@ -1,29 +1,48 @@
 package input
 
 import (
+	"errors"
 	"io"
 
 	"github.com/saintfish/chardet"
 )
 
-const detectBufSize = 4096
+const (
+	detectBufSize = 4096
+	maxProbeSize  = 64 * 1024 // 最大64KBまで読み取って判定
+)
 
 // DetectEncoding は入力ストリームから文字コードを検出する。
-// Java版 Detector.getCharset の移植。4096バイトのチャンクで読み取り、
-// chardetライブラリで判定する。
+// Java版 Detector.getCharset の移植。4096バイトのチャンクで繰り返し読み取り、
+// chardetライブラリで判定する。最大64KBまたはEOFまで読む。
 // 検出できない場合は空文字列を返す。
+//
+// 注意: この関数はストリームを消費する。呼び出し後に同じストリームを
+// 本文パースに使用する場合は、別途 Source.OpenText() で再オープンすること。
+// Java版も検出用と本文読取用で別ストリームを開く前提の設計。
 func DetectEncoding(r io.Reader) (string, error) {
 	buf := make([]byte, detectBufSize)
-	n, err := r.Read(buf)
-	if err != nil && err != io.EOF {
-		return "", err
+	data := make([]byte, 0, maxProbeSize)
+
+	for len(data) < maxProbeSize {
+		n, err := r.Read(buf)
+		if n > 0 {
+			data = append(data, buf[:n]...)
+		}
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
 	}
-	if n == 0 {
+
+	if len(data) == 0 {
 		return "", nil
 	}
 
 	detector := chardet.NewTextDetector()
-	result, err := detector.DetectBest(buf[:n])
+	result, err := detector.DetectBest(data)
 	if err != nil {
 		return "", nil
 	}

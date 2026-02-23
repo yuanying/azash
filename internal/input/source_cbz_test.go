@@ -19,7 +19,7 @@ func TestCbzSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open error: %v", err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		if src.Format() != FormatCbz {
 			t.Errorf("Format() = %v, want %v", src.Format(), FormatCbz)
@@ -31,7 +31,7 @@ func TestCbzSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open error: %v", err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		if !src.ImageOnly() {
 			t.Error("ImageOnly() = false, want true")
@@ -43,7 +43,7 @@ func TestCbzSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open error: %v", err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		entries := src.TextEntries()
 		if len(entries) != 0 {
@@ -56,7 +56,7 @@ func TestCbzSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open error: %v", err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		_, _, err = src.OpenText(0)
 		if !errors.Is(err, ErrNoTextEntry) {
@@ -69,7 +69,7 @@ func TestCbzSource(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Open error: %v", err)
 		}
-		defer src.Close()
+		defer func() { _ = src.Close() }()
 
 		images := src.ImageEntries()
 		if len(images) != 2 {
@@ -84,17 +84,18 @@ func createTestCbz(t *testing.T, path string) {
 	if err != nil {
 		t.Fatalf("failed to create cbz: %v", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	w := zip.NewWriter(f)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
-	// 画像エントリを追加
 	for _, name := range []string{"page01.png", "page02.jpg"} {
 		fw, err := w.Create(name)
 		if err != nil {
 			t.Fatalf("failed to create entry: %v", err)
 		}
-		fw.Write([]byte("fake image data"))
+		if _, err := fw.Write([]byte("fake image data")); err != nil {
+			t.Fatalf("failed to write entry: %v", err)
+		}
 	}
 }

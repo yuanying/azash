@@ -22,9 +22,8 @@ func TestDetectEncoding(t *testing.T) {
 	})
 
 	t.Run("UTF-8 BOM text", func(t *testing.T) {
-		bom := []byte{0xEF, 0xBB, 0xBF}
-		text := append(bom, []byte("吾輩は猫である。名前はまだ無い。")...)
-		r := bytes.NewReader(text)
+		bomText := append([]byte{0xEF, 0xBB, 0xBF}, []byte("吾輩は猫である。名前はまだ無い。")...)
+		r := bytes.NewReader(bomText)
 		enc, err := DetectEncoding(r)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
